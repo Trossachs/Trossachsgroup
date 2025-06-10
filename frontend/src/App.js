@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { 
@@ -23,7 +23,14 @@ import {
   Edit,
   Trash2,
   Save,
-  X
+  X,
+  Menu,
+  XIcon,
+  Github,
+  Twitter,
+  Linkedin,
+  Instagram,
+  ExternalLink
 } from "lucide-react";
 
 // Preloader Component
@@ -121,35 +128,199 @@ Our brand identity projects focus on creating memorable, scalable visual systems
 
 // Navigation Component
 const Navigation = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const navItems = [
+    { name: 'Dashboard', path: '/' },
+    { name: 'About', path: '/about' },
+    { name: 'Services', path: '/services' },
+    { name: 'Blog', path: '/blog' },
+    { name: 'Contact', path: '/contact' }
+  ];
+
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
   return (
     <motion.nav 
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="fixed top-0 w-full z-50 bg-gradient-to-r from-sky-900/90 to-cyan-900/90 backdrop-blur-lg border-b border-sky-500/20"
+      className="fixed top-0 w-full z-50 bg-gradient-to-r from-sky-900/95 to-cyan-900/95 backdrop-blur-lg border-b border-sky-500/20 shadow-lg"
     >
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
-          <motion.div 
-            whileHover={{ scale: 1.1 }}
-            className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent"
-          >
-            TROSSACHS GROUP
-          </motion.div>
+          {/* Logo */}
+          <Link to="/">
+            <motion.div 
+              whileHover={{ scale: 1.1 }}
+              className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent cursor-pointer"
+            >
+              TROSSACHS GROUP
+            </motion.div>
+          </Link>
+
+          {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-8">
-            {['Dashboard', 'About', 'Services', 'Blog', 'Contact'].map((item) => (
+            {navItems.map((item) => (
               <Link
-                key={item}
-                to={item === 'Dashboard' ? '/' : `/${item.toLowerCase()}`}
-                className="text-white hover:text-sky-300 transition-colors relative group"
+                key={item.name}
+                to={item.path}
+                className={`relative group transition-colors duration-300 ${
+                  isActive(item.path) 
+                    ? 'text-sky-400' 
+                    : 'text-white hover:text-sky-300'
+                }`}
               >
-                {item}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-sky-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
+                {item.name}
+                <span 
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-sky-400 to-cyan-400 transition-all duration-300 ${
+                    isActive(item.path) ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`}
+                />
               </Link>
             ))}
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden text-white p-2"
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* Mobile Navigation */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden mt-4 pb-4 border-t border-sky-500/20"
+            >
+              <div className="flex flex-col space-y-4 pt-4">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`transition-colors duration-300 ${
+                      isActive(item.path) 
+                        ? 'text-sky-400' 
+                        : 'text-white hover:text-sky-300'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.nav>
+  );
+};
+
+// Footer Component
+const Footer = () => {
+  return (
+    <footer className="bg-gradient-to-r from-gray-900 via-sky-900 to-cyan-900 border-t border-sky-500/20">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
+          {/* Company Info */}
+          <div className="lg:col-span-2">
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="text-3xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent mb-4"
+            >
+              TROSSACHS GROUP
+            </motion.div>
+            <p className="text-sky-300 mb-6 max-w-md">
+              Exclusive tech solutions specializing in web development, mobile apps, UI/UX design, and brand identity. 
+              Transforming ideas into powerful digital experiences.
+            </p>
+            <div className="flex space-x-4">
+              {[
+                { icon: Github, href: '#' },
+                { icon: Twitter, href: '#' },
+                { icon: Linkedin, href: '#' },
+                { icon: Instagram, href: '#' }
+              ].map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.href}
+                  whileHover={{ scale: 1.2, rotate: 10 }}
+                  className="w-10 h-10 bg-sky-800/40 rounded-full flex items-center justify-center text-sky-400 hover:text-white hover:bg-sky-600 transition-all duration-300"
+                >
+                  <social.icon size={20} />
+                </motion.a>
+              ))}
+            </div>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h3 className="text-xl font-bold text-white mb-6">Services</h3>
+            <div className="space-y-3">
+              {['Web Development', 'Mobile Apps', 'UI/UX Design', 'Brand Identity'].map((service) => (
+                <Link
+                  key={service}
+                  to="/services"
+                  className="block text-sky-300 hover:text-sky-400 transition-colors duration-300"
+                >
+                  {service}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Featured Projects */}
+          <div>
+            <h3 className="text-xl font-bold text-white mb-6">Featured Projects</h3>
+            <div className="space-y-3">
+              {['Poetry Farm', 'Online Eatery', 'Trading Site'].map((project) => (
+                <div
+                  key={project}
+                  className="flex items-center text-sky-300 hover:text-sky-400 transition-colors duration-300 cursor-pointer"
+                >
+                  <ExternalLink size={14} className="mr-2" />
+                  {project}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Info */}
+        <div className="grid md:grid-cols-3 gap-8 mt-12 pt-8 border-t border-sky-500/20">
+          <div className="flex items-center text-sky-300">
+            <Mail className="w-5 h-5 text-sky-400 mr-3" />
+            <span>hello@trossachsgroup.com</span>
+          </div>
+          <div className="flex items-center text-sky-300">
+            <Phone className="w-5 h-5 text-sky-400 mr-3" />
+            <span>+1 (555) 123-4567</span>
+          </div>
+          <div className="flex items-center text-sky-300">
+            <MapPin className="w-5 h-5 text-sky-400 mr-3" />
+            <span>Innovation District, Tech City</span>
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="mt-12 pt-8 border-t border-sky-500/20 text-center">
+          <p className="text-sky-400">
+            © {new Date().getFullYear()} Trossachs Group. All rights reserved. 
+            <span className="mx-2">|</span>
+            Crafted with excellence in mind.
+          </p>
+        </div>
+      </div>
+    </footer>
   );
 };
 
@@ -228,7 +399,7 @@ const Dashboard = () => {
             initial={{ opacity: 0, scale: 0.5 }}
             animate={heroInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 1.5, delay: 0.2 }}
-            className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-sky-400 via-cyan-400 to-sky-600 bg-clip-text text-transparent"
+            className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-sky-400 via-cyan-400 to-sky-600 bg-clip-text text-transparent hero-title"
           >
             TROSSACHS GROUP
           </motion.h1>
@@ -237,7 +408,7 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 50 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 1, delay: 0.8 }}
-            className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto"
+            className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto hero-subtitle"
           >
             Exclusive Tech Solutions • Web Development • Mobile Apps • UI/UX Design • Brand Identity
           </motion.p>
@@ -248,20 +419,24 @@ const Dashboard = () => {
             transition={{ duration: 0.8, delay: 1.2 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <motion.button
-              whileHover={{ scale: 1.1, rotateX: 10 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-bold rounded-full hover:shadow-2xl hover:shadow-sky-500/50 transition-all duration-300"
-            >
-              Explore Our Work
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.1, rotateX: -10 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 border-2 border-sky-400 text-sky-400 font-bold rounded-full hover:bg-sky-400 hover:text-white transition-all duration-300"
-            >
-              Get Started
-            </motion.button>
+            <Link to="/services">
+              <motion.button
+                whileHover={{ scale: 1.1, rotateX: 10 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-bold rounded-full hover:shadow-2xl hover:shadow-sky-500/50 transition-all duration-300"
+              >
+                Explore Our Work
+              </motion.button>
+            </Link>
+            <Link to="/contact">
+              <motion.button
+                whileHover={{ scale: 1.1, rotateX: -10 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 border-2 border-sky-400 text-sky-400 font-bold rounded-full hover:bg-sky-400 hover:text-white transition-all duration-300"
+              >
+                Get Started
+              </motion.button>
+            </Link>
           </motion.div>
         </motion.div>
 
@@ -311,7 +486,7 @@ const Dashboard = () => {
                   initial={{ opacity: 0, scale: 0 }}
                   animate={statsInView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ duration: 0.6, delay: index * 0.2 }}
-                  className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl p-6 border border-sky-500/20"
+                  className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl p-6 border border-sky-500/20 hover-lift"
                 >
                   <stat.icon className="w-8 h-8 text-sky-400 mx-auto mb-4" />
                   <div className="text-3xl font-bold text-white mb-2">{stat.number}</div>
@@ -356,7 +531,7 @@ const Dashboard = () => {
               <Card3D key={index}>
                 <motion.div
                   whileHover={{ y: -10 }}
-                  className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl overflow-hidden border border-sky-500/20 group"
+                  className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl overflow-hidden border border-sky-500/20 group project-card"
                 >
                   <div className="relative h-48 overflow-hidden">
                     <motion.img
@@ -371,7 +546,9 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
+                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-sky-300 transition-colors">
+                      {project.title}
+                    </h3>
                     <p className="text-sky-300 text-sm">{project.description}</p>
                   </div>
                 </motion.div>
@@ -404,12 +581,14 @@ const About = () => {
                 <p className="text-sky-300 mb-6">
                   Our portfolio includes innovative projects like Poetry Farm, Online Eatery, and advanced Trading Sites - each showcasing our ability to transform unique ideas into powerful digital experiences.
                 </p>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-full"
-                >
-                  Learn More <ArrowRight className="inline w-4 h-4 ml-2" />
-                </motion.button>
+                <Link to="/contact">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    className="px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-full"
+                  >
+                    Learn More <ArrowRight className="inline w-4 h-4 ml-2" />
+                  </motion.button>
+                </Link>
               </div>
             </Card3D>
             
@@ -484,7 +663,7 @@ const Services = () => {
                   className={`grid lg:grid-cols-2 gap-8 items-center ${index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''}`}
                 >
                   <div className={`${index % 2 === 1 ? 'lg:col-start-2' : ''}`}>
-                    <div className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl p-8 border border-sky-500/20">
+                    <div className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl p-8 border border-sky-500/20 service-card">
                       <service.icon className="w-12 h-12 text-sky-400 mb-4" />
                       <h2 className="text-3xl font-bold text-white mb-4">{service.title}</h2>
                       <p className="text-sky-300 mb-6">{service.description}</p>
@@ -577,7 +756,9 @@ const Blog = () => {
   };
 
   const handleDeletePost = (id) => {
-    setPosts(posts.filter(post => post.id !== id));
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      setPosts(posts.filter(post => post.id !== id));
+    }
   };
 
   const handleCancel = () => {
@@ -597,7 +778,7 @@ const Blog = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               onClick={handleAddPost}
-              className="px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-full flex items-center"
+              className="px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-full flex items-center hover:shadow-lg"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Post
@@ -626,7 +807,7 @@ const Blog = () => {
                           type="text"
                           value={formData.title}
                           onChange={(e) => setFormData({...formData, title: e.target.value})}
-                          className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none"
+                          className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none focus-ring"
                           placeholder="Post title"
                         />
                       </div>
@@ -637,7 +818,7 @@ const Blog = () => {
                           type="text"
                           value={formData.author}
                           onChange={(e) => setFormData({...formData, author: e.target.value})}
-                          className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none"
+                          className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none focus-ring"
                           placeholder="Author name"
                         />
                       </div>
@@ -649,7 +830,7 @@ const Blog = () => {
                         type="url"
                         value={formData.image}
                         onChange={(e) => setFormData({...formData, image: e.target.value})}
-                        className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none"
+                        className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none focus-ring"
                         placeholder="https://..."
                       />
                     </div>
@@ -660,7 +841,7 @@ const Blog = () => {
                         value={formData.excerpt}
                         onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
                         rows="2"
-                        className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none resize-none"
+                        className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none resize-none focus-ring"
                         placeholder="Brief excerpt..."
                       />
                     </div>
@@ -671,7 +852,7 @@ const Blog = () => {
                         value={formData.content}
                         onChange={(e) => setFormData({...formData, content: e.target.value})}
                         rows="8"
-                        className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none resize-none"
+                        className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none resize-none focus-ring blog-form"
                         placeholder="Full content..."
                       />
                     </div>
@@ -709,7 +890,7 @@ const Blog = () => {
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl overflow-hidden border border-sky-500/20 group relative"
+                  className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl overflow-hidden border border-sky-500/20 group relative blog-card"
                 >
                   <div className="absolute top-4 right-4 z-10 flex gap-2">
                     <motion.button
@@ -830,7 +1011,7 @@ const Contact = () => {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none"
+                    className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none focus-ring"
                     placeholder="Your Name"
                     required
                   />
@@ -843,7 +1024,7 @@ const Contact = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none"
+                    className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none focus-ring"
                     placeholder="your@email.com"
                     required
                   />
@@ -856,7 +1037,7 @@ const Contact = () => {
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                     rows="4"
-                    className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none resize-none"
+                    className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none resize-none focus-ring"
                     placeholder="Tell us about your project..."
                     required
                   />
@@ -906,6 +1087,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </AnimatePresence>
+        <Footer />
       </BrowserRouter>
     </div>
   );
