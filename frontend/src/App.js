@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,8 +18,106 @@ import {
   Target,
   MessageCircle,
   Calendar,
-  User
+  User,
+  Plus,
+  Edit,
+  Trash2,
+  Save,
+  X
 } from "lucide-react";
+
+// Preloader Component
+const Preloader = ({ isLoading }) => {
+  return (
+    <AnimatePresence>
+      {isLoading && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="fixed inset-0 z-50 bg-gradient-to-br from-gray-900 via-sky-900 to-cyan-900 flex items-center justify-center"
+        >
+          <div className="text-center">
+            <motion.div
+              animate={{ 
+                rotate: 360,
+                scale: [1, 1.2, 1]
+              }}
+              transition={{ 
+                rotate: { duration: 2, repeat: Infinity, ease: "linear" },
+                scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
+              }}
+              className="w-20 h-20 border-4 border-sky-500/30 border-t-sky-400 rounded-full mx-auto mb-6"
+            />
+            <motion.h2
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="text-3xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent"
+            >
+              TROSSACHS GROUP
+            </motion.h2>
+            <p className="text-sky-300 mt-2">Loading Excellence...</p>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// Blog Management System
+const blogPosts = [
+  {
+    id: 1,
+    title: "The Future of Web Development",
+    excerpt: "Exploring the latest trends and technologies shaping the web development landscape in 2025.",
+    content: `The web development industry continues to evolve at a rapid pace. In 2025, we're seeing incredible advancements in framework efficiency, AI integration, and user experience optimization.
+
+Key trends include:
+- Server-side rendering becoming the default
+- AI-powered code generation tools
+- Enhanced performance optimization
+- Progressive Web Apps reaching desktop parity
+
+At Trossachs Group, we stay ahead of these trends to deliver cutting-edge solutions for our clients.`,
+    date: "2025-01-15",
+    author: "Tech Team",
+    image: "https://images.unsplash.com/photo-1631334709265-83dcee08ba9d"
+  },
+  {
+    id: 2,
+    title: "Mobile App Design Trends",
+    excerpt: "Discover the latest mobile app design trends that are revolutionizing user experiences.",
+    content: `Mobile app design continues to push boundaries in 2025. We're seeing a shift towards more immersive experiences, better accessibility, and seamless cross-platform consistency.
+
+Latest trends include:
+- Neumorphism making a comeback
+- Voice-first interface design
+- Micro-interactions for enhanced UX
+- Dark mode as the preferred choice
+
+Our design team incorporates these trends while maintaining usability and brand consistency.`,
+    date: "2025-01-10",
+    author: "Design Team",
+    image: "https://images.unsplash.com/photo-1593422146705-ea6965a1d7a9"
+  },
+  {
+    id: 3,
+    title: "Brand Identity in Digital Age",
+    excerpt: "How to create compelling brand identities that resonate in the digital landscape.",
+    content: `Building a strong brand identity in today's digital world requires a deep understanding of both traditional design principles and modern digital behavior.
+
+Essential elements include:
+- Consistent visual language across platforms
+- Adaptive logos for various contexts
+- Color psychology in digital spaces
+- Typography that works across devices
+
+Our brand identity projects focus on creating memorable, scalable visual systems.`,
+    date: "2025-01-05",
+    author: "Creative Team",
+    image: "https://images.unsplash.com/photo-1488665717449-ca273d1d60a3"
+  }
+];
 
 // Navigation Component
 const Navigation = () => {
@@ -27,13 +125,13 @@ const Navigation = () => {
     <motion.nav 
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="fixed top-0 w-full z-50 bg-gradient-to-r from-purple-900/90 to-pink-900/90 backdrop-blur-lg border-b border-purple-500/20"
+      className="fixed top-0 w-full z-50 bg-gradient-to-r from-sky-900/90 to-cyan-900/90 backdrop-blur-lg border-b border-sky-500/20"
     >
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
           <motion.div 
             whileHover={{ scale: 1.1 }}
-            className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+            className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent"
           >
             TROSSACHS GROUP
           </motion.div>
@@ -42,10 +140,10 @@ const Navigation = () => {
               <Link
                 key={item}
                 to={item === 'Dashboard' ? '/' : `/${item.toLowerCase()}`}
-                className="text-white hover:text-purple-300 transition-colors relative group"
+                className="text-white hover:text-sky-300 transition-colors relative group"
               >
                 {item}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-sky-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
               </Link>
             ))}
           </div>
@@ -103,7 +201,7 @@ const Dashboard = () => {
   const [statsRef, statsInView] = useInView({ triggerOnce: true });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-sky-900 to-cyan-900">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -113,10 +211,10 @@ const Dashboard = () => {
             transition={{ duration: 2 }}
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url('https://images.pexels.com/photos/8728386/pexels-photo-8728386.jpeg')`
+              backgroundImage: `url('https://images.unsplash.com/photo-1631334709265-83dcee08ba9d')`
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/80 to-pink-900/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-sky-900/80 to-cyan-900/80" />
         </div>
         
         <motion.div
@@ -130,7 +228,7 @@ const Dashboard = () => {
             initial={{ opacity: 0, scale: 0.5 }}
             animate={heroInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 1.5, delay: 0.2 }}
-            className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-600 bg-clip-text text-transparent"
+            className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-sky-400 via-cyan-400 to-sky-600 bg-clip-text text-transparent"
           >
             TROSSACHS GROUP
           </motion.h1>
@@ -153,14 +251,14 @@ const Dashboard = () => {
             <motion.button
               whileHover={{ scale: 1.1, rotateX: 10 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-full hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300"
+              className="px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-bold rounded-full hover:shadow-2xl hover:shadow-sky-500/50 transition-all duration-300"
             >
               Explore Our Work
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.1, rotateX: -10 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 border-2 border-purple-400 text-purple-400 font-bold rounded-full hover:bg-purple-400 hover:text-white transition-all duration-300"
+              className="px-8 py-4 border-2 border-sky-400 text-sky-400 font-bold rounded-full hover:bg-sky-400 hover:text-white transition-all duration-300"
             >
               Get Started
             </motion.button>
@@ -178,7 +276,7 @@ const Dashboard = () => {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute top-20 left-10 w-16 h-16 bg-purple-500/20 rounded-full blur-xl"
+          className="absolute top-20 left-10 w-16 h-16 bg-sky-500/20 rounded-full blur-xl"
         />
         <motion.div
           animate={{ 
@@ -191,7 +289,7 @@ const Dashboard = () => {
             ease: "easeInOut",
             delay: 1
           }}
-          className="absolute bottom-20 right-10 w-24 h-24 bg-pink-500/20 rounded-full blur-xl"
+          className="absolute bottom-20 right-10 w-24 h-24 bg-cyan-500/20 rounded-full blur-xl"
         />
       </section>
 
@@ -213,11 +311,11 @@ const Dashboard = () => {
                   initial={{ opacity: 0, scale: 0 }}
                   animate={statsInView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ duration: 0.6, delay: index * 0.2 }}
-                  className="bg-gradient-to-br from-purple-800/40 to-pink-800/40 backdrop-blur-lg rounded-2xl p-6 border border-purple-500/20"
+                  className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl p-6 border border-sky-500/20"
                 >
-                  <stat.icon className="w-8 h-8 text-purple-400 mx-auto mb-4" />
+                  <stat.icon className="w-8 h-8 text-sky-400 mx-auto mb-4" />
                   <div className="text-3xl font-bold text-white mb-2">{stat.number}</div>
-                  <div className="text-purple-300">{stat.label}</div>
+                  <div className="text-sky-300">{stat.label}</div>
                 </motion.div>
               </Card3D>
             ))}
@@ -225,60 +323,56 @@ const Dashboard = () => {
         </div>
       </ParallaxSection>
 
-      {/* Services Preview */}
+      {/* Featured Projects */}
       <ParallaxSection className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <motion.h2 
-            className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+            className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent"
           >
-            Our Exclusive Services
+            Featured Projects
           </motion.h2>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                title: "Web Development",
-                icon: Code,
-                description: "Custom web applications with cutting-edge technology",
-                image: "https://images.unsplash.com/photo-1563089145-599997674d42?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwxfHxwcm9ncmFtbWluZ3xlbnwwfHx8cHVycGxlfDE3NDk1ODI3MTZ8MA&ixlib=rb-4.1.0&q=85"
+                title: "Poetry Farm",
+                category: "Web Development & UI/UX",
+                description: "A creative agricultural platform combining poetry with farming, featuring immersive storytelling and farm management tools.",
+                image: "https://images.unsplash.com/photo-1651384360730-8c218a6e8da9"
               },
               {
-                title: "Mobile Apps",
-                icon: Smartphone,
-                description: "Native and cross-platform mobile solutions",
-                image: "https://images.pexels.com/photos/5475761/pexels-photo-5475761.jpeg"
+                title: "Online Eatery",
+                category: "Mobile App & Brand Identity",
+                description: "Complete food delivery platform with custom mobile apps, branding, and restaurant management system.",
+                image: "https://images.unsplash.com/photo-1488665717449-ca273d1d60a3"
               },
               {
-                title: "UI/UX Design",
-                icon: Palette,
-                description: "Beautiful and intuitive user experiences",
-                image: "https://images.pexels.com/photos/7657856/pexels-photo-7657856.jpeg"
-              },
-              {
-                title: "Brand Identity",
-                icon: Star,
-                description: "Complete branding and visual identity solutions",
-                image: "https://images.unsplash.com/photo-1619708838487-d18b744f2ea4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwyfHxjcmVhdGl2ZSUyMGRlc2lnbnxlbnwwfHx8cHVycGxlfDE3NDk1ODI3MTB8MA&ixlib=rb-4.1.0&q=85"
+                title: "Trading Site",
+                category: "Web Development & UI/UX",
+                description: "Professional trading platform with real-time data, advanced analytics, and secure transaction processing.",
+                image: "https://images.pexels.com/photos/9169180/pexels-photo-9169180.jpeg"
               }
-            ].map((service, index) => (
+            ].map((project, index) => (
               <Card3D key={index}>
                 <motion.div
                   whileHover={{ y: -10 }}
-                  className="bg-gradient-to-br from-purple-800/40 to-pink-800/40 backdrop-blur-lg rounded-2xl overflow-hidden border border-purple-500/20 group"
+                  className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl overflow-hidden border border-sky-500/20 group"
                 >
                   <div className="relative h-48 overflow-hidden">
                     <motion.img
                       whileHover={{ scale: 1.1 }}
-                      src={service.image}
-                      alt={service.title}
+                      src={project.image}
+                      alt={project.title}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-purple-900/80 to-transparent" />
-                    <service.icon className="absolute bottom-4 right-4 w-8 h-8 text-purple-400" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-sky-900/80 to-transparent" />
+                    <div className="absolute bottom-4 right-4 px-2 py-1 bg-sky-500/80 text-white text-xs rounded-full">
+                      {project.category}
+                    </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-white mb-2">{service.title}</h3>
-                    <p className="text-purple-300 text-sm">{service.description}</p>
+                    <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
+                    <p className="text-sky-300 text-sm">{project.description}</p>
                   </div>
                 </motion.div>
               </Card3D>
@@ -293,26 +387,26 @@ const Dashboard = () => {
 // About Page
 const About = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-sky-900 to-cyan-900 pt-24">
       <ParallaxSection className="py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <motion.h1 className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <motion.h1 className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">
             About Trossachs Group
           </motion.h1>
           
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <Card3D>
-              <div className="bg-gradient-to-br from-purple-800/40 to-pink-800/40 backdrop-blur-lg rounded-2xl p-8 border border-purple-500/20">
+              <div className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl p-8 border border-sky-500/20">
                 <h2 className="text-3xl font-bold text-white mb-6">Our Story</h2>
-                <p className="text-purple-300 mb-6">
+                <p className="text-sky-300 mb-6">
                   Founded with a vision to revolutionize the tech industry, Trossachs Group has emerged as a leading force in exclusive digital solutions. We combine cutting-edge technology with creative excellence to deliver unparalleled results.
                 </p>
-                <p className="text-purple-300 mb-6">
-                  Our team of skilled developers, designers, and strategists work collaboratively to transform ideas into powerful digital experiences that drive business growth and innovation.
+                <p className="text-sky-300 mb-6">
+                  Our portfolio includes innovative projects like Poetry Farm, Online Eatery, and advanced Trading Sites - each showcasing our ability to transform unique ideas into powerful digital experiences.
                 </p>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full"
+                  className="px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-full"
                 >
                   Learn More <ArrowRight className="inline w-4 h-4 ml-2" />
                 </motion.button>
@@ -325,11 +419,11 @@ const About = () => {
                 className="relative h-96 rounded-2xl overflow-hidden"
               >
                 <img
-                  src="https://images.pexels.com/photos/8728386/pexels-photo-8728386.jpeg"
-                  alt="Our Team"
+                  src="https://images.unsplash.com/photo-1631334709265-83dcee08ba9d"
+                  alt="Our Vision"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-sky-900/60 to-transparent" />
               </motion.div>
             </Card3D>
           </div>
@@ -345,38 +439,38 @@ const Services = () => {
     {
       title: "Web Development",
       icon: Code,
-      description: "Custom web applications built with the latest technologies",
+      description: "Custom web applications built with the latest technologies, like our Poetry Farm platform that combines creativity with functionality.",
       features: ["React/Next.js", "Node.js/Python", "Cloud Deployment", "API Integration"],
-      image: "https://images.unsplash.com/photo-1563089145-599997674d42?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwxfHxwcm9ncmFtbWluZ3xlbnwwfHx8cHVycGxlfDE3NDk1ODI3MTZ8MA&ixlib=rb-4.1.0&q=85"
+      image: "https://images.unsplash.com/photo-1631334709265-83dcee08ba9d"
     },
     {
       title: "Mobile Apps",
       icon: Smartphone,
-      description: "Native and cross-platform mobile solutions",
+      description: "Native and cross-platform mobile solutions, including comprehensive food delivery apps like our Online Eatery project.",
       features: ["iOS/Android", "React Native", "Flutter", "App Store Optimization"],
-      image: "https://images.pexels.com/photos/5475761/pexels-photo-5475761.jpeg"
+      image: "https://images.unsplash.com/photo-1593422146705-ea6965a1d7a9"
     },
     {
       title: "UI/UX Design",
       icon: Palette,
-      description: "Beautiful and intuitive user experiences",
+      description: "Beautiful and intuitive user experiences that prioritize usability and aesthetic appeal across all our projects.",
       features: ["User Research", "Wireframing", "Prototyping", "Design Systems"],
-      image: "https://images.pexels.com/photos/7657856/pexels-photo-7657856.jpeg"
+      image: "https://images.unsplash.com/photo-1651384360730-8c218a6e8da9"
     },
     {
       title: "Brand Identity",
       icon: Star,
-      description: "Complete branding and visual identity solutions",
+      description: "Complete branding and visual identity solutions that create memorable experiences and strong market presence.",
       features: ["Logo Design", "Brand Guidelines", "Marketing Materials", "Digital Assets"],
-      image: "https://images.unsplash.com/photo-1619708838487-d18b744f2ea4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwyfHxjcmVhdGl2ZSUyMGRlc2lnbnxlbnwwfHx8cHVycGxlfDE3NDk1ODI3MTB8MA&ixlib=rb-4.1.0&q=85"
+      image: "https://images.unsplash.com/photo-1488665717449-ca273d1d60a3"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-sky-900 to-cyan-900 pt-24">
       <ParallaxSection className="py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <motion.h1 className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <motion.h1 className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">
             Our Services
           </motion.h1>
           
@@ -390,14 +484,14 @@ const Services = () => {
                   className={`grid lg:grid-cols-2 gap-8 items-center ${index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''}`}
                 >
                   <div className={`${index % 2 === 1 ? 'lg:col-start-2' : ''}`}>
-                    <div className="bg-gradient-to-br from-purple-800/40 to-pink-800/40 backdrop-blur-lg rounded-2xl p-8 border border-purple-500/20">
-                      <service.icon className="w-12 h-12 text-purple-400 mb-4" />
+                    <div className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl p-8 border border-sky-500/20">
+                      <service.icon className="w-12 h-12 text-sky-400 mb-4" />
                       <h2 className="text-3xl font-bold text-white mb-4">{service.title}</h2>
-                      <p className="text-purple-300 mb-6">{service.description}</p>
+                      <p className="text-sky-300 mb-6">{service.description}</p>
                       <div className="space-y-2">
                         {service.features.map((feature, idx) => (
-                          <div key={idx} className="flex items-center text-purple-300">
-                            <Zap className="w-4 h-4 text-purple-400 mr-2" />
+                          <div key={idx} className="flex items-center text-sky-300">
+                            <Zap className="w-4 h-4 text-sky-400 mr-2" />
                             {feature}
                           </div>
                         ))}
@@ -415,7 +509,7 @@ const Services = () => {
                         alt={service.title}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-sky-900/60 to-transparent" />
                     </div>
                   </motion.div>
                 </motion.div>
@@ -428,49 +522,212 @@ const Services = () => {
   );
 };
 
-// Blog Page
+// Blog Page with Management
 const Blog = () => {
-  const blogPosts = [
-    {
-      title: "The Future of Web Development",
-      excerpt: "Exploring the latest trends and technologies shaping the web development landscape in 2025.",
-      date: "2025-01-15",
-      author: "Tech Team",
-      image: "https://images.unsplash.com/photo-1563089145-599997674d42?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwxfHxwcm9ncmFtbWluZ3xlbnwwfHx8cHVycGxlfDE3NDk1ODI3MTZ8MA&ixlib=rb-4.1.0&q=85"
-    },
-    {
-      title: "Mobile App Design Trends",
-      excerpt: "Discover the latest mobile app design trends that are revolutionizing user experiences.",
-      date: "2025-01-10",
-      author: "Design Team",
-      image: "https://images.pexels.com/photos/5475761/pexels-photo-5475761.jpeg"
-    },
-    {
-      title: "Brand Identity in Digital Age",
-      excerpt: "How to create compelling brand identities that resonate in the digital landscape.",
-      date: "2025-01-05",
-      author: "Creative Team",
-      image: "https://images.unsplash.com/photo-1619708838487-d18b744f2ea4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwyfHxjcmVhdGl2ZSUyMGRlc2lnbnxlbnwwfHx8cHVycGxlfDE3NDk1ODI3MTB8MA&ixlib=rb-4.1.0&q=85"
+  const [posts, setPosts] = useState(blogPosts);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    excerpt: '',
+    content: '',
+    author: '',
+    image: ''
+  });
+
+  const handleAddPost = () => {
+    setFormData({
+      title: '',
+      excerpt: '',
+      content: '',
+      author: '',
+      image: ''
+    });
+    setEditingPost(null);
+    setIsEditing(true);
+    setShowForm(true);
+  };
+
+  const handleEditPost = (post) => {
+    setFormData(post);
+    setEditingPost(post.id);
+    setIsEditing(true);
+    setShowForm(true);
+  };
+
+  const handleSavePost = () => {
+    if (editingPost) {
+      // Edit existing post
+      setPosts(posts.map(post => 
+        post.id === editingPost ? { ...formData, id: editingPost } : post
+      ));
+    } else {
+      // Add new post
+      const newPost = {
+        ...formData,
+        id: Math.max(...posts.map(p => p.id)) + 1,
+        date: new Date().toISOString().split('T')[0]
+      };
+      setPosts([newPost, ...posts]);
     }
-  ];
+    setIsEditing(false);
+    setShowForm(false);
+    setEditingPost(null);
+  };
+
+  const handleDeletePost = (id) => {
+    setPosts(posts.filter(post => post.id !== id));
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setShowForm(false);
+    setEditingPost(null);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-sky-900 to-cyan-900 pt-24">
       <ParallaxSection className="py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <motion.h1 className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Our Blog
-          </motion.h1>
+          <div className="flex justify-between items-center mb-16">
+            <motion.h1 className="text-6xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">
+              Our Blog
+            </motion.h1>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              onClick={handleAddPost}
+              className="px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-full flex items-center"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Post
+            </motion.button>
+          </div>
+
+          {/* Blog Post Form */}
+          <AnimatePresence>
+            {showForm && (
+              <motion.div
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -50 }}
+                className="mb-12"
+              >
+                <Card3D>
+                  <div className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl p-8 border border-sky-500/20">
+                    <h3 className="text-2xl font-bold text-white mb-6">
+                      {editingPost ? 'Edit Post' : 'Add New Post'}
+                    </h3>
+                    
+                    <div className="grid md:grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <label className="block text-sky-300 mb-2">Title</label>
+                        <input
+                          type="text"
+                          value={formData.title}
+                          onChange={(e) => setFormData({...formData, title: e.target.value})}
+                          className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none"
+                          placeholder="Post title"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sky-300 mb-2">Author</label>
+                        <input
+                          type="text"
+                          value={formData.author}
+                          onChange={(e) => setFormData({...formData, author: e.target.value})}
+                          className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none"
+                          placeholder="Author name"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="mb-6">
+                      <label className="block text-sky-300 mb-2">Image URL</label>
+                      <input
+                        type="url"
+                        value={formData.image}
+                        onChange={(e) => setFormData({...formData, image: e.target.value})}
+                        className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none"
+                        placeholder="https://..."
+                      />
+                    </div>
+                    
+                    <div className="mb-6">
+                      <label className="block text-sky-300 mb-2">Excerpt</label>
+                      <textarea
+                        value={formData.excerpt}
+                        onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
+                        rows="2"
+                        className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none resize-none"
+                        placeholder="Brief excerpt..."
+                      />
+                    </div>
+                    
+                    <div className="mb-6">
+                      <label className="block text-sky-300 mb-2">Content</label>
+                      <textarea
+                        value={formData.content}
+                        onChange={(e) => setFormData({...formData, content: e.target.value})}
+                        rows="8"
+                        className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none resize-none"
+                        placeholder="Full content..."
+                      />
+                    </div>
+                    
+                    <div className="flex gap-4">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        onClick={handleSavePost}
+                        className="px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-lg flex items-center"
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Post
+                      </motion.button>
+                      
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        onClick={handleCancel}
+                        className="px-6 py-3 border border-sky-500 text-sky-400 rounded-lg flex items-center hover:bg-sky-500/10"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Cancel
+                      </motion.button>
+                    </div>
+                  </div>
+                </Card3D>
+              </motion.div>
+            )}
+          </AnimatePresence>
           
+          {/* Blog Posts Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post, index) => (
-              <Card3D key={index}>
+            {posts.map((post, index) => (
+              <Card3D key={post.id}>
                 <motion.article
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
-                  className="bg-gradient-to-br from-purple-800/40 to-pink-800/40 backdrop-blur-lg rounded-2xl overflow-hidden border border-purple-500/20 group"
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl overflow-hidden border border-sky-500/20 group relative"
                 >
+                  <div className="absolute top-4 right-4 z-10 flex gap-2">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      onClick={() => handleEditPost(post)}
+                      className="p-2 bg-sky-600/80 text-white rounded-full hover:bg-sky-600"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      onClick={() => handleDeletePost(post.id)}
+                      className="p-2 bg-red-600/80 text-white rounded-full hover:bg-red-600"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </motion.button>
+                  </div>
+                  
                   <div className="relative h-48 overflow-hidden">
                     <motion.img
                       whileHover={{ scale: 1.1 }}
@@ -478,28 +735,28 @@ const Blog = () => {
                       alt={post.title}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-purple-900/80 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-sky-900/80 to-transparent" />
                   </div>
                   
                   <div className="p-6">
-                    <div className="flex items-center text-purple-400 text-sm mb-4">
+                    <div className="flex items-center text-sky-400 text-sm mb-4">
                       <Calendar className="w-4 h-4 mr-2" />
                       {post.date}
                       <User className="w-4 h-4 ml-4 mr-2" />
                       {post.author}
                     </div>
                     
-                    <h2 className="text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors">
+                    <h2 className="text-xl font-bold text-white mb-3 group-hover:text-sky-300 transition-colors">
                       {post.title}
                     </h2>
                     
-                    <p className="text-purple-300 text-sm mb-4">
+                    <p className="text-sky-300 text-sm mb-4">
                       {post.excerpt}
                     </p>
                     
                     <motion.button
                       whileHover={{ x: 5 }}
-                      className="text-purple-400 hover:text-purple-300 font-medium text-sm flex items-center"
+                      className="text-sky-400 hover:text-sky-300 font-medium text-sm flex items-center"
                     >
                       Read More <ArrowRight className="w-4 h-4 ml-1" />
                     </motion.button>
@@ -516,7 +773,7 @@ const Blog = () => {
 
 // Contact Page
 const Contact = () => {
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: ''
@@ -526,35 +783,38 @@ const Contact = () => {
     e.preventDefault();
     // Handle form submission
     console.log('Form submitted:', formData);
+    // Reset form
+    setFormData({ name: '', email: '', message: '' });
+    alert('Thank you for your message! We\'ll get back to you soon.');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-sky-900 to-cyan-900 pt-24">
       <ParallaxSection className="py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <motion.h1 className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <motion.h1 className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">
             Contact Us
           </motion.h1>
           
           <div className="grid lg:grid-cols-2 gap-16">
             <Card3D>
-              <div className="bg-gradient-to-br from-purple-800/40 to-pink-800/40 backdrop-blur-lg rounded-2xl p-8 border border-purple-500/20">
+              <div className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl p-8 border border-sky-500/20">
                 <h2 className="text-3xl font-bold text-white mb-6">Get In Touch</h2>
-                <p className="text-purple-300 mb-8">
-                  Ready to start your next project? Let's discuss how we can bring your vision to life with our exclusive tech solutions.
+                <p className="text-sky-300 mb-8">
+                  Ready to start your next project? Whether it's a creative platform like Poetry Farm, a comprehensive food delivery system, or a sophisticated trading platform, let's discuss how we can bring your vision to life.
                 </p>
                 
                 <div className="space-y-6">
-                  <div className="flex items-center text-purple-300">
-                    <Mail className="w-6 h-6 text-purple-400 mr-4" />
+                  <div className="flex items-center text-sky-300">
+                    <Mail className="w-6 h-6 text-sky-400 mr-4" />
                     <span>hello@trossachsgroup.com</span>
                   </div>
-                  <div className="flex items-center text-purple-300">
-                    <Phone className="w-6 h-6 text-purple-400 mr-4" />
+                  <div className="flex items-center text-sky-300">
+                    <Phone className="w-6 h-6 text-sky-400 mr-4" />
                     <span>+1 (555) 123-4567</span>
                   </div>
-                  <div className="flex items-center text-purple-300">
-                    <MapPin className="w-6 h-6 text-purple-400 mr-4" />
+                  <div className="flex items-center text-sky-300">
+                    <MapPin className="w-6 h-6 text-sky-400 mr-4" />
                     <span>Innovation District, Tech City</span>
                   </div>
                 </div>
@@ -562,40 +822,43 @@ const Contact = () => {
             </Card3D>
             
             <Card3D>
-              <form onSubmit={handleSubmit} className="bg-gradient-to-br from-purple-800/40 to-pink-800/40 backdrop-blur-lg rounded-2xl p-8 border border-purple-500/20 space-y-6">
+              <form onSubmit={handleSubmit} className="bg-gradient-to-br from-sky-800/40 to-cyan-800/40 backdrop-blur-lg rounded-2xl p-8 border border-sky-500/20 space-y-6">
                 <div>
-                  <label className="block text-purple-300 mb-2">Name</label>
+                  <label className="block text-sky-300 mb-2">Name</label>
                   <motion.input
                     whileFocus={{ scale: 1.02 }}
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-4 py-3 bg-purple-900/30 border border-purple-500/30 rounded-lg text-white placeholder-purple-400 focus:border-purple-400 focus:outline-none"
+                    className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none"
                     placeholder="Your Name"
+                    required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-purple-300 mb-2">Email</label>
+                  <label className="block text-sky-300 mb-2">Email</label>
                   <motion.input
                     whileFocus={{ scale: 1.02 }}
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-3 bg-purple-900/30 border border-purple-500/30 rounded-lg text-white placeholder-purple-400 focus:border-purple-400 focus:outline-none"
+                    className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none"
                     placeholder="your@email.com"
+                    required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-purple-300 mb-2">Message</label>
+                  <label className="block text-sky-300 mb-2">Message</label>
                   <motion.textarea
                     whileFocus={{ scale: 1.02 }}
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                     rows="4"
-                    className="w-full px-4 py-3 bg-purple-900/30 border border-purple-500/30 rounded-lg text-white placeholder-purple-400 focus:border-purple-400 focus:outline-none resize-none"
+                    className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none resize-none"
                     placeholder="Tell us about your project..."
+                    required
                   />
                 </div>
                 
@@ -603,7 +866,7 @@ const Contact = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   type="submit"
-                  className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300"
+                  className="w-full px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-sky-500/50 transition-all duration-300"
                 >
                   Send Message <MessageCircle className="inline w-4 h-4 ml-2" />
                 </motion.button>
@@ -618,8 +881,20 @@ const Contact = () => {
 
 // Main App Component
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="App">
+      <Preloader isLoading={isLoading} />
       <BrowserRouter>
         <Navigation />
         <AnimatePresence mode="wait">
