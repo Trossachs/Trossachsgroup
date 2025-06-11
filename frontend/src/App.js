@@ -1151,7 +1151,41 @@ const Blog = () => {
   // Admin password (in a real app, this would be handled securely on the backend)
   const ADMIN_PASSWORD = 'trossachs2025';
 
+  // Check if admin is logged in on component mount
+  useEffect(() => {
+    const adminStatus = localStorage.getItem('trossachs_admin');
+    if (adminStatus === 'true') {
+      setIsAdmin(true);
+    }
+  }, []);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (loginPassword === ADMIN_PASSWORD) {
+      setIsAdmin(true);
+      localStorage.setItem('trossachs_admin', 'true');
+      setShowLoginModal(false);
+      setLoginPassword('');
+      setLoginError('');
+    } else {
+      setLoginError('Invalid password. Please try again.');
+      setLoginPassword('');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAdmin(false);
+    localStorage.removeItem('trossachs_admin');
+    setShowForm(false);
+    setIsEditing(false);
+    setEditingPost(null);
+  };
+
   const handleAddPost = () => {
+    if (!isAdmin) {
+      setShowLoginModal(true);
+      return;
+    }
     setFormData({
       title: '',
       excerpt: '',
