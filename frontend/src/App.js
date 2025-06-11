@@ -1253,15 +1253,109 @@ const Blog = () => {
             <motion.h1 className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent mb-4 sm:mb-0">
               Our Blog
             </motion.h1>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              onClick={handleAddPost}
-              className="px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-full flex items-center hover:shadow-lg text-sm sm:text-base"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Post
-            </motion.button>
+            <div className="flex items-center gap-4">
+              {isAdmin ? (
+                <>
+                  <span className="text-sky-300 text-sm">Admin Mode</span>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    onClick={handleAddPost}
+                    className="px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-full flex items-center hover:shadow-lg text-sm sm:text-base"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Post
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    onClick={handleLogout}
+                    className="px-6 py-3 border border-red-500 text-red-400 rounded-full hover:bg-red-500/10 text-sm sm:text-base"
+                  >
+                    Logout
+                  </motion.button>
+                </>
+              ) : (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  onClick={() => setShowLoginModal(true)}
+                  className="px-6 py-3 border border-sky-500 text-sky-400 rounded-full hover:bg-sky-500/10 text-sm sm:text-base"
+                >
+                  Admin Login
+                </motion.button>
+              )}
+            </div>
           </div>
+
+          {/* Admin Login Modal */}
+          <AnimatePresence>
+            {showLoginModal && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+                onClick={() => setShowLoginModal(false)}
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-gradient-to-br from-sky-800/90 to-cyan-800/90 backdrop-blur-lg rounded-2xl p-8 border border-sky-500/20 max-w-md w-full mx-4"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h3 className="text-2xl font-bold text-white mb-6 text-center">Admin Login</h3>
+                  <form onSubmit={handleLogin} className="space-y-6">
+                    <div>
+                      <label className="block text-sky-300 mb-2">Password</label>
+                      <motion.input
+                        whileFocus={{ scale: 1.02 }}
+                        type="password"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        className="w-full px-4 py-3 bg-sky-900/30 border border-sky-500/30 rounded-lg text-white placeholder-sky-400 focus:border-sky-400 focus:outline-none focus-ring"
+                        placeholder="Enter admin password"
+                        required
+                        autoFocus
+                      />
+                      {loginError && (
+                        <p className="text-red-400 text-sm mt-2">{loginError}</p>
+                      )}
+                    </div>
+                    
+                    <div className="flex gap-4">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        type="submit"
+                        className="flex-1 px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-lg font-medium"
+                      >
+                        Login
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        type="button"
+                        onClick={() => {
+                          setShowLoginModal(false);
+                          setLoginPassword('');
+                          setLoginError('');
+                        }}
+                        className="flex-1 px-6 py-3 border border-sky-500 text-sky-400 rounded-lg hover:bg-sky-500/10"
+                      >
+                        Cancel
+                      </motion.button>
+                    </div>
+                  </form>
+                  
+                  <div className="mt-6 p-4 bg-sky-900/20 rounded-lg border border-sky-500/20">
+                    <p className="text-sky-300 text-sm text-center mb-2">
+                      <strong>Demo Password:</strong>
+                    </p>
+                    <p className="text-sky-400 text-center font-mono bg-sky-900/30 px-3 py-1 rounded">
+                      trossachs2025
+                    </p>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Blog Post Form */}
           <AnimatePresence>
