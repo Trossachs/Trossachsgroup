@@ -1136,6 +1136,10 @@ const Blog = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
@@ -1143,6 +1147,9 @@ const Blog = () => {
     author: '',
     image: ''
   });
+
+  // Admin password (in a real app, this would be handled securely on the backend)
+  const ADMIN_PASSWORD = 'trossachs2025';
 
   const handleAddPost = () => {
     setFormData({
