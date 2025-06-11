@@ -1199,6 +1199,10 @@ const Blog = () => {
   };
 
   const handleEditPost = (post) => {
+    if (!isAdmin) {
+      setShowLoginModal(true);
+      return;
+    }
     setFormData(post);
     setEditingPost(post.id);
     setIsEditing(true);
