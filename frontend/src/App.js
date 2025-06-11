@@ -1230,6 +1230,10 @@ const Blog = () => {
   };
 
   const handleDeletePost = (id) => {
+    if (!isAdmin) {
+      setShowLoginModal(true);
+      return;
+    }
     if (window.confirm('Are you sure you want to delete this post?')) {
       setPosts(posts.filter(post => post.id !== id));
     }
